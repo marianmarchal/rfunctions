@@ -3,7 +3,7 @@ prop <- function(.dat, ..., name = "p", .keep_count = F){
   dat <- .dat %>% 
     group_by(...) %>%
      summarize(n=n()) %>% 
-    mutate({{p}} := n/sum(n)) %>% 
+    mutate({{name}} := n/sum(n)) %>% 
     ungroup
   if(.keep_count != F){
     dat <- dat %>% select(-n)
@@ -19,7 +19,7 @@ add_prop <- function(.dat, ..., name = "p"){
 surprisal <- function(.dat, ..., name = "surprisal"){
   .dat %>% 
     prop(...) %>% 
-    mutate({{surprisal}} := -log2(p))
+    mutate({{name}} := -log2(p))
 }
 
 entropy <- function(.dat, ..., name = "entropy"){
