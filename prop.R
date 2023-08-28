@@ -25,8 +25,7 @@ surprisal <- function(.dat, ..., name = "surprisal"){
 entropy <- function(.dat, ..., name = "entropy"){
   col_vars <- quos(...)
   .dat %>% 
-    # add_surprisal(!!!col_vars) %>%
-    add_surprisal(...) %>% 
+    surprisal(...) %>% 
     mutate(ent = p *surprisal) %>% 
     #calculate entropy over last grouping var
     group_by(!!!col_vars[1:length(col_vars)-1]) %>%
