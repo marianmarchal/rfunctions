@@ -5,7 +5,7 @@ prop <- function(.dat, ..., name = "p", .keep_count = F){
      summarize(n=n()) %>% 
     mutate({{name}} := n/sum(n)) %>% 
     ungroup
-  if(.keep_count != F){
+  if(.keep_count == F){
     dat <- dat %>% select(-n)
   }
   return(dat)
@@ -16,16 +16,20 @@ add_prop <- function(.dat, ..., name = "p"){
   return(.data %>% merge(propdat))
 }
 
-surprisal <- function(.dat, ..., name = "surprisal"){
-  .dat %>% 
+surprisal <- function(.dat, ..., name = "surprisal", .keep_helper = F){
+  dat <- .dat %>% 
     prop(...) %>% 
     mutate({{name}} := -log2(p))
+  if(.keep_helper == F){
+    dat <- dat %>% select(-p)
+  }
+  return(dat)
 }
 
 entropy <- function(.dat, ..., name = "entropy"){
   col_vars <- quos(...)
   .dat %>% 
-    surprisal(...) %>% 
+    surprisal(..., .keep_helper = T) %>% 
     mutate(ent = p *surprisal) %>% 
     #calculate entropy over last grouping var
     group_by(!!!col_vars[1:length(col_vars)-1]) %>%
