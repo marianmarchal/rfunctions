@@ -7,3 +7,4 @@ cleananswer: Clean answer from LingoTurk
 cleanstats: Clean statistics file from LingoTurk
 PA: Pseudo-anonymize data set
 prop: Calculate proportion of grouping variable
+stylesheet: Font and colour palette
