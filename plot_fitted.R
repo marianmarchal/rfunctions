@@ -1,8 +1,6 @@
 #' Plot fitted estimates of one to three discrete variables with two levels each
 #'
 #' @param model Model that the estimates are taken from
-#' @param y.lab String, Title of the y-axis
-#' @param plot.type String, Either "point" or "bar"
 #' @param x.var String, Variable on the x-axis
 #' @param x.level Numeric vector, Levels of this variable
 #' @param x.names Character vector, Names of the levels of this variable
@@ -15,7 +13,10 @@
 #' @param wrap.levels Numeric vector, Levels of this variable - optional
 #' @param wrap.names Character vector, Names of the levels of this variable - optional
 #' @param wrap.title String, Name of this variable in the plot - optional
+#' @param y.lab String, Title of the y-axis
+#' @param plot.type String, Either "point" or "bar"
 #' @param line Boolean, whether lines are present
+#' @param errorbar String, Either "se" (for standard error) or "ci" (for confidence interval)
 #' @param confidence.level Numeric, Confidence level
 #'
 #' @return Plot with fitted estimates
@@ -23,8 +24,6 @@
 #'
 
 plot_fitted <-  function(model,
-                         y.lab = "Fitted estimates",
-                         plot.type = "point",
                          x.var,
                          x.levels = c(-1, 1),
                          x.names = c("Condition A", "Condition B"),
@@ -38,7 +37,11 @@ plot_fitted <-  function(model,
                          wrap.names = c("Condition K", "Condition L"),
                          wrap.title = "K vs. L",
                          line = T,
-                         confidence.level = 0.95){
+                         y.lab = "Fitted estimates",
+                         plot.type = "point", #c("point", "bar")
+                         errorbar = "se", #c("se", "ci")
+                         confidence.level = 0.95
+                         ){
   
   xlevels <- list(x.levels, group.levels, wrap.levels)
   names(xlevels) <- c(x.var, group.var, wrap.var)
@@ -136,6 +139,7 @@ plot_fitted <-  function(model,
   }
   
   #add error bars
+  if(errorbar == "se"){
   p <- base_plot +
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = fit-se,
@@ -144,6 +148,16 @@ plot_fitted <-  function(model,
       width = .3,
       position = pd
     )
+  } else if(errorbar == "ci"){
+    p <- base_plot +
+      ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = lower,
+                     ymax= upper),
+        size = .5,
+        width = .3,
+        position = pd
+      )
+  }
   
   return(p)
 }
