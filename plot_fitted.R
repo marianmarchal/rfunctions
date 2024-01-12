@@ -18,8 +18,9 @@
 #' @param line Boolean, whether lines are present
 #' @param errorbar String, Either "se" (for standard error) or "ci" (for confidence interval)
 #' @param confidence.level Numeric, Confidence level
+#' @param estimates.only Boolean, whether estimates should be extracted only (i.e. no plot)
 #'
-#' @return Plot with fitted estimates
+#' @return Plot with fitted estimates (or data frame with fitted estimates)
 #' @export
 #'
 
@@ -40,8 +41,9 @@ plot_fitted <-  function(model,
                          y.lab = "Fitted estimates",
                          plot.type = "point", #c("point", "bar")
                          errorbar = "se", #c("se", "ci")
-                         confidence.level = 0.95
-                         ){
+                         confidence.level = 0.95,
+                         estimates.only = F
+){
   
   xlevels <- list(x.levels, group.levels, wrap.levels)
   names(xlevels) <- c(x.var, group.var, wrap.var)
@@ -75,6 +77,10 @@ plot_fitted <-  function(model,
   }
   
   print(est.dat)
+  
+  if(estimates.only == T){
+    return(est.dat)
+  }
   
   #create basis of plot
   if(is.null(group.var)){
@@ -129,7 +135,7 @@ plot_fitted <-  function(model,
     base_plot <- base_plot +
       ggplot2::geom_line(
         linetype = "dotted",
-                     size = 1)
+        size = 1)
   }
   
   #add facet_wrap
@@ -140,14 +146,14 @@ plot_fitted <-  function(model,
   
   #add error bars
   if(errorbar == "se"){
-  p <- base_plot +
-    ggplot2::geom_errorbar(
-      ggplot2::aes(ymin = fit-se,
-                   ymax= fit+se),
-      size = .5,
-      width = .3,
-      position = pd
-    )
+    p <- base_plot +
+      ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = fit-se,
+                     ymax= fit+se),
+        size = .5,
+        width = .3,
+        position = pd
+      )
   } else if(errorbar == "ci"){
     p <- base_plot +
       ggplot2::geom_errorbar(
