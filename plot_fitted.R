@@ -165,5 +165,8 @@ plot_fitted <-  function(model,
       )
   }
   
+  p <- p +
+    theme(legend.key.width=unit(1,"cm"))
+  
   return(p)
 }
