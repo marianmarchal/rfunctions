@@ -20,6 +20,7 @@
 #' @param confidence.level Numeric, Confidence level
 #' @param estimates.only Boolean, whether estimates should be extracted only (i.e. no plot)
 #' @param pd.size Numeric, size of position dodge, defaults to .2 if point or .9 in other cases
+#' @param point.size Numeric, size of points
 #' @param legend.key.width Numeric, size of legend key width in cm
 #'
 #' @return Plot with fitted estimates (or data frame with fitted estimates)
@@ -40,11 +41,13 @@ plot_fitted <-  function(model,
                          wrap.names = c("Condition K", "Condition L"),
                          wrap.title = "K vs. L",
                          line = T,
+                         shape = T,
                          y.lab = "Fitted estimates",
                          plot.type = "point", #c("point", "bar")
                          errorbar = "se", #c("se", "ci")
                          confidence.level = 0.95,
                          estimates.only = F,
+                         point.size = 4,
                          pd.size = NULL,
                          legend.key.width = 1
                          
@@ -114,15 +117,26 @@ plot_fitted <-  function(model,
     ggplot2::ylab(y.lab)
   
   #add points or bar  
-  if(plot.type == "point" & !is.null(group.var)){
-    base_plot <- base_plot +
-      ggplot2::geom_point(
-        size= 3,
-        position = pd)
-  } else if(plot.type == "point" & is.null(group.var)){
-    base_plot <- base_plot +
-      ggplot2::geom_point(
-        size= 3)
+  if(plot.type == "point"){
+    if(!is.null(group.var)){
+      if(shape == T){
+        base_plot <- base_plot +
+          ggplot2::geom_point(
+            size= point.size,
+            position = pd,
+            aes(shape = .data[[group.title]]))
+      } else {
+      base_plot <- base_plot +
+        ggplot2::geom_point(
+          size= point.size,
+          position = pd)
+      }
+    }
+    if(is.null(group.var)){
+      base_plot <- base_plot +
+        ggplot2::geom_point(
+          size= point.size)
+    }
   } else {
     base_plot <- base_plot +
       ggplot2::geom_bar(
@@ -137,13 +151,13 @@ plot_fitted <-  function(model,
     base_plot <- base_plot +
       ggplot2::geom_line(
         ggplot2::aes(linetype = .data[[group.title]]),
-        size = 1,
+        size = .75,
         position = pd)
   } else if(line == T & is.null(group.var)){
     base_plot <- base_plot +
       ggplot2::geom_line(
         linetype = "dotted",
-        size = 1)
+        size = .75)
   }
   
   #add facet_wrap
