@@ -19,6 +19,8 @@
 #' @param errorbar String, Either "se" (for standard error) or "ci" (for confidence interval)
 #' @param confidence.level Numeric, Confidence level
 #' @param estimates.only Boolean, whether estimates should be extracted only (i.e. no plot)
+#' @param pd.size Numeric, size of position dodge, defaults to .2 if point or .9 in other cases
+#' @param legend.key.width Numeric, size of legend key width in cm
 #'
 #' @return Plot with fitted estimates (or data frame with fitted estimates)
 #' @export
@@ -42,15 +44,21 @@ plot_fitted <-  function(model,
                          plot.type = "point", #c("point", "bar")
                          errorbar = "se", #c("se", "ci")
                          confidence.level = 0.95,
-                         estimates.only = F
+                         estimates.only = F,
+                         pd.size = NULL,
+                         legend.key.width = 1
+                         
 ){
   
   xlevels <- list(x.levels, group.levels, wrap.levels)
   names(xlevels) <- c(x.var, group.var, wrap.var)
   
   #set position_dodge
-  pd_size <- ifelse(plot.type == "point", .2, .9)
-  pd <- ggplot2::position_dodge(width = pd_size)
+  if(is.null(pd.size)){
+    pd.size <- ifelse(plot.type == "point", .05, .9)
+  }
+  pd <- ggplot2::position_dodge(width = pd.size)
+  
   
   #extract estimates
   if(is.null(wrap.var)){
